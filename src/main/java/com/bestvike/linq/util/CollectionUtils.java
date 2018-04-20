@@ -29,4 +29,9 @@ public final class CollectionUtils {
     public static <T> List<T> toList(Collection<T> source) {
         return new ArrayList<>(source);
     }
+
+    public static <T> void addAll(Collection<T> source, Iterable<? extends T> iterable) {
+        for (T item : iterable)
+            source.add(item);
+    }
 }

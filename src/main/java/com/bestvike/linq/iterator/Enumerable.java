@@ -1,9 +1,9 @@
 package com.bestvike.linq.iterator;
 
-import com.bestvike.linq.ICollectionEnumerable;
+import com.bestvike.linq.partition.IIListProvider;
 import com.bestvike.linq.IEnumerable;
 import com.bestvike.linq.IEnumerator;
-import com.bestvike.linq.IEqualityComparer;
+import com.bestvike.collections.generic.IEqualityComparer;
 import com.bestvike.linq.IGrouping;
 import com.bestvike.linq.IListEnumerable;
 import com.bestvike.linq.ILookup;
@@ -13,14 +13,14 @@ import com.bestvike.linq.enumerable.EmptyEnumerable;
 import com.bestvike.linq.exception.Errors;
 import com.bestvike.linq.function.Func1;
 import com.bestvike.linq.function.Func2;
-import com.bestvike.linq.impl.Buffer;
+import com.bestvike.linq.impl.cache.Buffer;
 import com.bestvike.linq.impl.GroupedEnumerable;
 import com.bestvike.linq.impl.GroupedEnumerable2;
 import com.bestvike.linq.impl.IdentityFunction;
 import com.bestvike.linq.impl.Lookup;
-import com.bestvike.linq.impl.OrderedEnumerable;
-import com.bestvike.linq.util.Comparer;
-import com.bestvike.linq.util.EqualityComparer;
+import com.bestvike.linq.impl.order.OrderedEnumerable;
+import com.bestvike.collections.generic.Comparer;
+import com.bestvike.collections.generic.EqualityComparer;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -40,8 +40,8 @@ public final class Enumerable {
     public static <TSource> IEnumerable<TSource> where(IEnumerable<TSource> source, Func1<TSource, Boolean> predicate) {
         if (source == null) throw Errors.argumentNull("source");
         if (predicate == null) throw Errors.argumentNull("predicate");
-        if (source instanceof Iterator) return ((Iterator<TSource>) source).internalWhere(predicate);
-        if (source instanceof ArrayEnumerable) return new WhereArrayIterator<>(((ArrayEnumerable<TSource>) source).internalSource(), predicate);
+        if (source instanceof Iterator) return ((Iterator<TSource>) source)._where(predicate);
+        if (source instanceof ArrayEnumerable) return new WhereArrayIterator<>(((ArrayEnumerable<TSource>) source).getSource(), predicate);
         return new WhereEnumerableIterator<>(source, predicate);
     }
 
@@ -54,8 +54,8 @@ public final class Enumerable {
     public static <TSource, TResult> IEnumerable<TResult> select(IEnumerable<TSource> source, Func1<TSource, TResult> selector) {
         if (source == null) throw Errors.argumentNull("source");
         if (selector == null) throw Errors.argumentNull("selector");
-        if (source instanceof Iterator) return ((Iterator<TSource>) source).internalSelect(selector);
-        if (source instanceof ArrayEnumerable) return new WhereSelectArrayIterator<>(((ArrayEnumerable<TSource>) source).internalSource(), null, selector);
+        if (source instanceof Iterator) return ((Iterator<TSource>) source)._select(selector);
+        if (source instanceof ArrayEnumerable) return new WhereSelectArrayIterator<>(((ArrayEnumerable<TSource>) source).getSource(), null, selector);
         return new WhereSelectEnumerableIterator<>(source, null, selector);
     }
 
@@ -316,13 +316,13 @@ public final class Enumerable {
     public static <TSource> TSource[] toArray(IEnumerable<TSource> source, Class<TSource> clazz) {
         if (source == null) throw Errors.argumentNull("source");
         if (clazz == null) throw Errors.argumentNull("clazz");
-        if (source instanceof ICollectionEnumerable) return ((ICollectionEnumerable<TSource>) source).internalToArray(clazz);
+        if (source instanceof IIListProvider) return ((IIListProvider<TSource>) source)._toArray(clazz);
         return new Buffer<>(source).toArray(clazz);
     }
 
     public static <TSource> List<TSource> toList(IEnumerable<TSource> source) {
         if (source == null) throw Errors.argumentNull("source");
-        if (source instanceof ICollectionEnumerable) return ((ICollectionEnumerable<TSource>) source).internalToList();
+        if (source instanceof IIListProvider) return ((IIListProvider<TSource>) source)._toList();
         List<TSource> list = new ArrayList<>();
         for (TSource item : source)
             list.add(item);
@@ -650,35 +650,10 @@ public final class Enumerable {
         return EmptyEnumerable.Instance();
     }
 
-    public static <TSource> boolean any(IEnumerable<TSource> source) {
-        if (source == null) throw Errors.argumentNull("source");
-        try (IEnumerator<TSource> e = source.enumerator()) {
-            if (e.moveNext()) return true;
-        }
-        return false;
-    }
-
-    public static <TSource> boolean any(IEnumerable<TSource> source, Func1<TSource, Boolean> predicate) {
-        if (source == null) throw Errors.argumentNull("source");
-        if (predicate == null) throw Errors.argumentNull("predicate");
-        for (TSource element : source) {
-            if (predicate.apply(element)) return true;
-        }
-        return false;
-    }
-
-    public static <TSource> boolean all(IEnumerable<TSource> source, Func1<TSource, Boolean> predicate) {
-        if (source == null) throw Errors.argumentNull("source");
-        if (predicate == null) throw Errors.argumentNull("predicate");
-        for (TSource element : source) {
-            if (!predicate.apply(element)) return false;
-        }
-        return true;
-    }
 
     public static <TSource> int count(IEnumerable<TSource> source) {
         if (source == null) throw Errors.argumentNull("source");
-        if (source instanceof ICollectionEnumerable) return ((ICollectionEnumerable) source).internalSize();
+        if (source instanceof IIListProvider) return ((IIListProvider) source)._getCount();
         int count = 0;
         try (IEnumerator<TSource> e = source.enumerator()) {
             while (e.moveNext()) count = Math.addExact(count, 1);
@@ -716,7 +691,7 @@ public final class Enumerable {
     }
 
     public static <TSource> boolean contains(IEnumerable<TSource> source, TSource value) {
-        if (source instanceof ICollectionEnumerable) return ((ICollectionEnumerable<TSource>) source).internalContains(value);
+        if (source instanceof IIListProvider) return ((IIListProvider<TSource>) source)._contains(value);
         return contains(source, value, null);
     }
 
@@ -726,34 +701,6 @@ public final class Enumerable {
         for (TSource element : source)
             if (comparer.equals(element, value)) return true;
         return false;
-    }
-
-    public static <TSource> TSource aggregate(IEnumerable<TSource> source, Func2<TSource, TSource, TSource> func) {
-        if (source == null) throw Errors.argumentNull("source");
-        if (func == null) throw Errors.argumentNull("func");
-        try (IEnumerator<TSource> e = source.enumerator()) {
-            if (!e.moveNext()) throw Errors.noElements();
-            TSource result = e.current();
-            while (e.moveNext()) result = func.apply(result, e.current());
-            return result;
-        }
-    }
-
-    public static <TSource, TAccumulate> TAccumulate aggregate(IEnumerable<TSource> source, TAccumulate seed, Func2<TAccumulate, TSource, TAccumulate> func) {
-        if (source == null) throw Errors.argumentNull("source");
-        if (func == null) throw Errors.argumentNull("func");
-        TAccumulate result = seed;
-        for (TSource element : source) result = func.apply(result, element);
-        return result;
-    }
-
-    public static <TSource, TAccumulate, TResult> TResult aggregate(IEnumerable<TSource> source, TAccumulate seed, Func2<TAccumulate, TSource, TAccumulate> func, Func1<TAccumulate, TResult> resultSelector) {
-        if (source == null) throw Errors.argumentNull("source");
-        if (func == null) throw Errors.argumentNull("func");
-        if (resultSelector == null) throw Errors.argumentNull("resultSelector");
-        TAccumulate result = seed;
-        for (TSource element : source) result = func.apply(result, element);
-        return resultSelector.apply(result);
     }
 
     public static int sumInt(IEnumerable<Integer> source) {

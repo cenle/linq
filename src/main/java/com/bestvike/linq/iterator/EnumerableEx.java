@@ -1,7 +1,7 @@
 package com.bestvike.linq.iterator;
 
 import com.bestvike.linq.IEnumerable;
-import com.bestvike.linq.IEqualityComparer;
+import com.bestvike.collections.generic.IEqualityComparer;
 import com.bestvike.linq.enumerable.ArrayEnumerable;
 import com.bestvike.linq.enumerable.CharSequenceEnumerable;
 import com.bestvike.linq.enumerable.CollectionEnumerable;
@@ -11,8 +11,8 @@ import com.bestvike.linq.enumerable.SingletonEnumerable;
 import com.bestvike.linq.exception.Errors;
 import com.bestvike.linq.function.Func1;
 import com.bestvike.linq.function.Func2;
-import com.bestvike.linq.util.Array;
-import com.bestvike.linq.util.Comparer;
+import com.bestvike.collections.generic.Array;
+import com.bestvike.collections.generic.Comparer;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -759,8 +759,4 @@ public final class EnumerableEx {
         return value;
     }
 
-    public static <TSource> IEnumerable<TSource> append(IEnumerable<TSource> source, TSource item) {
-        if (source == null) throw Errors.argumentNull("source");
-        return new AppendIterator<>(source, item);
-    }
 }

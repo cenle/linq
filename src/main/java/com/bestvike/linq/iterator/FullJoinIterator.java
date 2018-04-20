@@ -2,7 +2,7 @@ package com.bestvike.linq.iterator;
 
 import com.bestvike.linq.IEnumerable;
 import com.bestvike.linq.IEnumerator;
-import com.bestvike.linq.IEqualityComparer;
+import com.bestvike.collections.generic.IEqualityComparer;
 import com.bestvike.linq.function.Func1;
 import com.bestvike.linq.function.Func2;
 import com.bestvike.linq.impl.Lookup;

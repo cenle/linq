@@ -2,7 +2,7 @@ package com.bestvike.linq.iterator;
 
 import com.bestvike.linq.IEnumerable;
 import com.bestvike.linq.function.Func1;
-import com.bestvike.linq.util.Array;
+import com.bestvike.collections.generic.Array;
 import com.bestvike.linq.util.LambdaUtils;
 
 /**
@@ -24,12 +24,12 @@ final class WhereArrayIterator<TSource> extends Iterator<TSource> {
     }
 
     @Override
-    public <TResult> IEnumerable<TResult> internalSelect(Func1<TSource, TResult> selector) {
+    public <TResult> IEnumerable<TResult> _select(Func1<TSource, TResult> selector) {
         return new WhereSelectArrayIterator<>(this.source, this.predicate, selector);
     }
 
     @Override
-    public IEnumerable<TSource> internalWhere(Func1<TSource, Boolean> predicate) {
+    public IEnumerable<TSource> _where(Func1<TSource, Boolean> predicate) {
         return new WhereArrayIterator<>(this.source, LambdaUtils.combinePredicates(this.predicate, predicate));
     }
 

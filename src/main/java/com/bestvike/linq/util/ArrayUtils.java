@@ -30,6 +30,13 @@ public final class ArrayUtils {
         return indexOf(array, item, startIndex, count) != -1;
     }
 
+    public static <T> void fill(T[] array, T value) {
+        if (array == null)
+            throw Errors.argumentNull("array");
+        for (int i = 0, length = array.length; i < length; i++)
+            array[i] = value;
+    }
+
     public static <T> int indexOf(T[] array, T item) {
         return indexOf(array, item, 0, array.length);
     }

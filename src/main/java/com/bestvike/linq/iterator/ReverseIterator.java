@@ -1,7 +1,7 @@
 package com.bestvike.linq.iterator;
 
 import com.bestvike.linq.IEnumerable;
-import com.bestvike.linq.impl.Buffer;
+import com.bestvike.linq.impl.cache.Buffer;
 
 /**
  * Created by 许崇雷 on 2017/7/18.
@@ -25,12 +25,12 @@ final class ReverseIterator<TSource> extends AbstractIterator<TSource> {
         switch (this.state) {
             case 1:
                 this.buffer = new Buffer<>(this.source);
-                this.index = this.buffer.count();
+                this.index = this.buffer.getCount();
                 this.state = 2;
             case 2:
                 this.index--;
                 if (this.index >= 0) {
-                    this.current = this.buffer.items().get(this.index);
+                    this.current = this.buffer.getItems().get(this.index);
                     return true;
                 }
                 this.close();

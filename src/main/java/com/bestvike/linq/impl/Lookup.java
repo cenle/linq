@@ -1,9 +1,9 @@
 package com.bestvike.linq.impl;
 
-import com.bestvike.linq.ICollectionEnumerable;
+import com.bestvike.linq.partition.IIListProvider;
 import com.bestvike.linq.IEnumerable;
 import com.bestvike.linq.IEnumerator;
-import com.bestvike.linq.IEqualityComparer;
+import com.bestvike.collections.generic.IEqualityComparer;
 import com.bestvike.linq.IGrouping;
 import com.bestvike.linq.IListEnumerable;
 import com.bestvike.linq.ILookup;
@@ -14,9 +14,9 @@ import com.bestvike.linq.exception.Errors;
 import com.bestvike.linq.function.Func1;
 import com.bestvike.linq.function.Func2;
 import com.bestvike.linq.iterator.AbstractIterator;
-import com.bestvike.linq.util.Array;
+import com.bestvike.collections.generic.Array;
 import com.bestvike.linq.util.ArrayUtils;
-import com.bestvike.linq.util.EqualityComparer;
+import com.bestvike.collections.generic.EqualityComparer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.Objects;
 /**
  * Created by 许崇雷 on 2017/7/11.
  */
-public final class Lookup<TKey, TElement> implements ICollectionEnumerable<IGrouping<TKey, TElement>>, ILookup<TKey, TElement> {
+public final class Lookup<TKey, TElement> implements IIListProvider<IGrouping<TKey, TElement>>, ILookup<TKey, TElement> {
     private final IEqualityComparer<TKey> comparer;
     private Array<Grouping> groupings;
     private Grouping lastGrouping;

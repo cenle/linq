@@ -1,7 +1,7 @@
 package com.bestvike.linq.enumerable;
 
 import com.bestvike.collections.generic.Array;
-import com.bestvike.linq.ICollectionEnumerable;
+import com.bestvike.linq.partition.IIListProvider;
 import com.bestvike.linq.IEnumerator;
 import com.bestvike.linq.enumerator.IterableEnumerator;
 import com.bestvike.linq.util.CollectionUtils;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by 许崇雷 on 2017/7/17.
  */
-public final class CollectionEnumerable<TElement> implements ICollectionEnumerable<TElement> {
+public final class CollectionEnumerable<TElement> implements IIListProvider<TElement> {
     private final Collection<TElement> source;
 
     public CollectionEnumerable(Collection<TElement> source) {

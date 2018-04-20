@@ -1,5 +1,6 @@
 package com.bestvike.linq;
 
+import com.bestvike.collections.generic.IEqualityComparer;
 import com.bestvike.linq.function.Func1;
 import com.bestvike.linq.function.Func2;
 import com.bestvike.linq.iterator.Enumerable;

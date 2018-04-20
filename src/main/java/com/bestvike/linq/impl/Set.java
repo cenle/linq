@@ -1,8 +1,8 @@
 package com.bestvike.linq.impl;
 
-import com.bestvike.linq.IEqualityComparer;
-import com.bestvike.linq.util.Array;
-import com.bestvike.linq.util.EqualityComparer;
+import com.bestvike.collections.generic.IEqualityComparer;
+import com.bestvike.collections.generic.Array;
+import com.bestvike.collections.generic.EqualityComparer;
 
 /**
  * Created by 许崇雷 on 2017/7/18.
